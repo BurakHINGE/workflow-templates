@@ -1,0 +1,33 @@
+name: Java Security Focused CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "17"
+
+    - name: Compile
+      run: |
+        find . -name "*.java" > sources.txt
+        javac @sources.txt
+
+    - name: Install Semgrep
+      run: |
+        pip install semgrep
+
+    - name: Static Security Analysis
+      run: |
+        semgrep --config=auto .
